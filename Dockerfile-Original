@@ -1,0 +1,30 @@
+# Use Go 1.23 bookworm as base image
+# This line sets the foundation for your Docker image.
+FROM golang:1.23-bookworm AS base
+
+# Move to working directory /build
+# All subsequent commands will be executed within this directory unless explicitly stated otherwise.
+WORKDIR /build
+
+# Copy the go.mod and go.sum files to the /build directory
+COPY go.mod go.sum ./
+
+# Install dependencies
+RUN go mod download
+
+# Copy the entire source code into the container
+# This copies all files and directories from your current local directory into the /build directory within the image.
+COPY . .
+
+# Build the application
+# The next step is to compile your Go application by executing the go build command. The resulting executable is named go-blog.
+RUN go build -o go-blog
+
+# Document the port that may need to be published
+# This line informs Docker that the containerized application will likely listen on port 8000.
+EXPOSE 8000
+
+# Start the application
+# Finally, the CMD instruction specifies the default command to be executed when a container is started from this image.
+# In this case, it executes the go-blog executable.
+CMD ["/build/go-blog"]
